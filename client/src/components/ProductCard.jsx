@@ -1,15 +1,60 @@
+import { useNavigate } from "react-router-dom";
+import { useFavorites } from "../contexts/FavoritesContext";
+
 function formatBRL(value) {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  return Number(value || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 }
 
 export default function ProductCard({ product }) {
+  const navigate = useNavigate();
+  const { toggleFavorite, isFav } = useFavorites();
+
+  // importante: garantir que é o id correto (no seu mapProductToCard deve virar product.id)
+  const fav = isFav(product.id);
+
+  function goToDetails() {
+    navigate(`/products/${product.id}`);
+  }
+
+  function onToggleFav(e) {
+    e.stopPropagation(); // não deixa clicar no card
+    toggleFavorite(product);
+  }
+
+  function onBuy(e) {
+    e.stopPropagation(); // não deixa clicar no card
+    // por enquanto só vai para detalhes (ou você pode implementar carrinho depois)
+    navigate(`/products/${product.id}`);
+  }
+
   return (
-    <div className="card">
+    <div
+      className="card"
+      role="button"
+      tabIndex={0}
+      onClick={goToDetails}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") goToDetails();
+      }}
+      style={{ cursor: "pointer" }}
+    >
       <div className="cardTop">
         <div className="stars">
           {"★".repeat(product.rating)} <span>({product.reviews})</span>
         </div>
-        <button className="fav" title="Favoritar">♡</button>
+
+        <button
+          type="button"
+          className="fav"
+          title={fav ? "Remover dos favoritos" : "Favoritar"}
+          onClick={onToggleFav}
+          style={{ fontWeight: 700 }}
+        >
+          {fav ? "♥" : "♡"}
+        </button>
       </div>
 
       <div className="imgWrap">
@@ -28,7 +73,9 @@ export default function ProductCard({ product }) {
           <span className="price">{formatBRL(product.price)}</span>
         </div>
 
-        <button className="buyBtn">🛒 Comprar</button>
+        <button type="button" className="buyBtn" onClick={onBuy}>
+          🛒 Comprar
+        </button>
       </div>
     </div>
   );

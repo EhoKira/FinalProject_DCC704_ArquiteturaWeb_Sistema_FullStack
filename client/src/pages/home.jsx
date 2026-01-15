@@ -1,104 +1,63 @@
+import { useEffect, useMemo, useState } from "react";
+import { api } from "../services/api";
+import { mapProductToCard } from "../utils/mapProductToCard";
+
 import Header from "../components/Header";
 import CategoryBar from "../components/CategoryBar";
 import Section from "../components/Section";
 import ProductCard from "../components/ProductCard";
 import "../styles/home.css";
 
-const mockOffers = [
-  {
-    id: 1,
-    title: "Console PlayStation 5 Slim",
-    price: 3347.07,
-    oldPrice: 3650.2,
-    discount: "15% OFF",
-    rating: 5,
-    reviews: 85,
-    image:
-      "https://images.unsplash.com/photo-1606813909355-86bbd8d8d00b?auto=format&fit=crop&w=700&q=80",
-  },
-  {
-    id: 2,
-    title: "SSD WD 1TB M.2 NVMe",
-    price: 260.0,
-    oldPrice: 360.0,
-    discount: "15% OFF",
-    rating: 5,
-    reviews: 65,
-    image:
-      "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=700&q=80",
-  },
-  {
-    id: 3,
-    title: "Suporte Articulado para Monitor",
-    price: 339.99,
-    oldPrice: 358.24,
-    discount: "15% OFF",
-    rating: 5,
-    reviews: 65,
-    image:
-      "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=700&q=80",
-  },
-  {
-    id: 4,
-    title: "Gabinete Gamer com RGB",
-    price: 604.99,
-    oldPrice: 632.49,
-    discount: "15% OFF",
-    rating: 5,
-    reviews: 65,
-    image:
-      "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=700&q=80",
-  },
-];
-
-const mockGaming = [
-  {
-    id: 5,
-    title: "Headset Gamer Sem Fio",
-    price: 389.99,
-    oldPrice: 400.35,
-    discount: "15% OFF",
-    rating: 5,
-    reviews: 65,
-    image:
-      "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=700&q=80",
-  },
-  {
-    id: 6,
-    title: "Mouse Gamer",
-    price: 177.59,
-    oldPrice: 189.2,
-    discount: "15% OFF",
-    rating: 5,
-    reviews: 65,
-    image:
-      "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=700&q=80",
-  },
-  {
-    id: 7,
-    title: "Memória RAM 8GB",
-    price: 260.0,
-    oldPrice: 360.0,
-    discount: "15% OFF",
-    rating: 5,
-    reviews: 65,
-    image:
-      "https://images.unsplash.com/photo-1614064642306-8f5599d59efb?auto=format&fit=crop&w=700&q=80",
-  },
-  {
-    id: 8,
-    title: "Teclado Mecânico Gamer",
-    price: 499.57,
-    oldPrice: 665.2,
-    discount: "15% OFF",
-    rating: 5,
-    reviews: 65,
-    image:
-      "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=700&q=80",
-  },
-];
-
 export default function Home() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        setErrorMsg("");
+
+        // Seu baseURL já é http://localhost:5000/api
+        // então aqui fica /products
+        const res = await api.get("/products");
+
+        if (!isMounted) return;
+
+        // Garantir array
+        const data = Array.isArray(res.data) ? res.data : [];
+        setProducts(data);
+      } catch (err) {
+        if (!isMounted) return;
+
+        console.error(err);
+        setErrorMsg("Não foi possível carregar os produtos do backend.");
+        setProducts([]);
+      } finally {
+        if (!isMounted) return;
+        setLoading(false);
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Converte do formato do backend para o formato do ProductCard
+  const cardProducts = useMemo(() => {
+    return products.map(mapProductToCard);
+  }, [products]);
+
+  // Seções (ajusta como você quiser)
+  const offers = cardProducts.slice(0, 4);
+  const gaming = cardProducts.slice(4, 8);
+
   return (
     <div className="page">
       <Header />
@@ -127,19 +86,33 @@ export default function Home() {
 
       {/* OFERTAS */}
       <section className="container">
+        {errorMsg ? (
+          <div style={{ padding: 12, marginTop: 12, border: "1px solid #ddd", borderRadius: 8 }}>
+            <strong>Erro:</strong> {errorMsg}
+          </div>
+        ) : null}
+
         <Section title="Últimas Ofertas" actionText="Ver Tudo >">
           <div className="grid4">
-            {mockOffers.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+            {loading ? (
+              <p style={{ padding: 12 }}>Carregando produtos...</p>
+            ) : offers.length === 0 ? (
+              <p style={{ padding: 12 }}>Nenhum produto encontrado.</p>
+            ) : (
+              offers.map((p) => <ProductCard key={p.id} product={p} />)
+            )}
           </div>
         </Section>
 
         <Section title="Linha Gaming" actionText="Ver Tudo >">
           <div className="grid4">
-            {mockGaming.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+            {loading ? (
+              <p style={{ padding: 12 }}>Carregando produtos...</p>
+            ) : gaming.length === 0 ? (
+              <p style={{ padding: 12 }}>Sem produtos nesta seção.</p>
+            ) : (
+              gaming.map((p) => <ProductCard key={p.id} product={p} />)
+            )}
           </div>
         </Section>
 
