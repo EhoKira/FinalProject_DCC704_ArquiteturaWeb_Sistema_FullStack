@@ -4,7 +4,7 @@ import { api } from "../services/api";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // {id,name,email,role}
+  const [user, setUser] = useState(null); // { _id, name, email, role }
   const [token, setToken] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
@@ -17,15 +17,16 @@ export function AuthProvider({ children }) {
     if (t && u) {
       try {
         const parsedUser = JSON.parse(u);
+
         setToken(t);
         setUser(parsedUser);
 
-        // garante que axios já saia autenticado após refresh
+        // garante header para requests após refresh
         api.defaults.headers.common.Authorization = `Bearer ${t}`;
       } catch {
-        // se der problema no JSON, limpa
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        delete api.defaults.headers.common.Authorization;
       }
     }
 
@@ -41,16 +42,16 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
-    // garante header para próximas requests imediatamente
+    // header imediato
     api.defaults.headers.common.Authorization = `Bearer ${data.token}`;
 
-    // ✅ IMPORTANTE: retornar data pro Login.jsx decidir rota
     return data; // { token, user }
   }
 
   function logout() {
     setToken(null);
     setUser(null);
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
@@ -58,7 +59,14 @@ export function AuthProvider({ children }) {
   }
 
   const value = useMemo(
-    () => ({ user, token, isAuthenticated, loadingAuth, login, logout }),
+    () => ({
+      user,
+      token,
+      isAuthenticated,
+      loadingAuth,
+      login,
+      logout,
+    }),
     [user, token, isAuthenticated, loadingAuth]
   );
 

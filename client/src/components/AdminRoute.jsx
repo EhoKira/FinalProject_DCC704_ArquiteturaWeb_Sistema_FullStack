@@ -2,10 +2,14 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function AdminRoute({ children }) {
-  const { isAuthenticated, user, loadingAuth } = useAuth();
+  const { user, isAuthenticated, loadingAuth } = useAuth();
 
-  if (loadingAuth) return null; // ou um Loader
+  if (loadingAuth) {
+    return <p style={{ padding: 20 }}>Carregando...</p>;
+  }
+
   if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== "admin") return <Navigate to="/" replace />;
 
-  return user?.role === "admin" ? children : <Navigate to="/" replace />;
+  return children;
 }

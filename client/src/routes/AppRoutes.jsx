@@ -38,6 +38,7 @@ export default function AppRoutes() {
 
       {/* ADMIN */}
       <Route path="/admin" element={<Navigate to="/admin/products" replace />} />
+
       <Route
         path="/admin/products"
         element={
@@ -46,8 +47,19 @@ export default function AppRoutes() {
           </AdminRoute>
         }
       />
+
       <Route
         path="/admin/products/new"
+        element={
+          <AdminRoute>
+            <AdminProductForm />
+          </AdminRoute>
+        }
+      />
+
+      {/* ✅ ROTA DE EDIÇÃO (usa useParams no AdminProductForm) */}
+      <Route
+        path="/admin/products/:id"
         element={
           <AdminRoute>
             <AdminProductForm />

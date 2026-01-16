@@ -1,6 +1,9 @@
+import "../styles/header.css"; // ✅ GARANTE que o CSS do header carrega
+
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import logoImg from "../assets/logo.png";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -9,19 +12,14 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // fecha com ESC
   useEffect(() => {
-    function onKeyDown(e) {
-      if (e.key === "Escape") setOpen(false);
+    function onDocClick(e) {
+      if (!menuRef.current) return;
+      if (!menuRef.current.contains(e.target)) setOpen(false);
     }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
-
-  // fecha se usuário deslogar em qualquer momento
-  useEffect(() => {
-    if (!isAuthenticated) setOpen(false);
-  }, [isAuthenticated]);
 
   function onUserClick() {
     if (!isAuthenticated) return navigate("/login");
@@ -29,27 +27,26 @@ export default function Header() {
   }
 
   function goProfile() {
-    setOpen(false);
     navigate("/profile");
+    setOpen(false);
   }
 
   function goAdmin() {
-    setOpen(false);
     navigate("/admin/products");
+    setOpen(false);
   }
 
   function doLogout() {
-    setOpen(false);
     logout();
+    setOpen(false);
     navigate("/login", { replace: true });
   }
 
   return (
     <header className="header">
       <div className="container headerRow">
-        <Link to="/" className="logo" style={{ textDecoration: "none" }}>
-          <span className="logoMark">⚙️</span>
-          <span className="logoText">TechParts</span>
+        <Link to="/" className="logo" aria-label="TechParts - Home">
+          <img className="logoImg" src={logoImg} alt="TechParts" />
         </Link>
 
         <div className="search">
@@ -63,23 +60,11 @@ export default function Header() {
         </nav>
 
         <div className="icons">
-          <button title="Favoritos" type="button">
-            ♡
-          </button>
-
-          <button title="Carrinho" type="button">
-            🛒
-          </button>
+          <button title="Favoritos" type="button">♡</button>
+          <button title="Carrinho" type="button">🛒</button>
 
           <div className="userMenu" ref={menuRef}>
-            <button
-              className="userBtn"
-              onClick={onUserClick}
-              title="Minha conta"
-              type="button"
-              aria-haspopup="menu"
-              aria-expanded={open ? "true" : "false"}
-            >
+            <button className="userBtn" onClick={onUserClick} type="button">
               <span className="userIcon">👤</span>
               <span className="userName">
                 {isAuthenticated ? user?.name || "Conta" : "Entrar"}
@@ -87,34 +72,27 @@ export default function Header() {
               <span className={`caret ${open ? "up" : ""}`}>▾</span>
             </button>
 
-            {/* overlay para fechar clicando fora */}
-            {open && (
-              <button
-                type="button"
-                className="menuOverlay"
-                aria-label="Fechar menu"
-                onClick={() => setOpen(false)}
-              />
-            )}
+            {isAuthenticated && open && (
+              <>
+                <button
+                  className="menuOverlay"
+                  onClick={() => setOpen(false)}
+                  aria-label="Fechar menu"
+                  type="button"
+                />
 
-            {isAuthenticated && (
-              <div className={`userDropdown ${open ? "open" : ""}`}>
-                <button type="button" onClick={goProfile}>
-                  Meu perfil
-                </button>
+                <div className="userDropdown open">
+                  <button type="button" onClick={goProfile}>Meu perfil</button>
 
-                {user?.role === "admin" && (
-                  <button type="button" onClick={goAdmin}>
-                    Área Admin
-                  </button>
-                )}
+                  {user?.role === "admin" && (
+                    <button type="button" onClick={goAdmin}>Área Admin</button>
+                  )}
 
-                <div className="dropdownDivider" />
+                  <div className="dropdownDivider" />
 
-                <button type="button" onClick={doLogout}>
-                  Sair
-                </button>
-              </div>
+                  <button type="button" onClick={doLogout}>Sair</button>
+                </div>
+              </>
             )}
           </div>
         </div>

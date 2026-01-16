@@ -1,0 +1,209 @@
+/* ===== Admin - Produtos ===== */
+
+.adminWrap {
+  padding: 26px 0 50px;
+}
+
+.adminTop {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.adminTitle h1 {
+  margin: 0;
+}
+
+.adminTitle p {
+  margin: 6px 0 0;
+  opacity: 0.75;
+}
+
+.adminActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.adminBtn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+  transition: transform 120ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.adminBtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 122, 0, 0.10);
+  border-color: rgba(255, 122, 0, 0.35);
+}
+
+.adminBtnPrimary {
+  border: 1px solid transparent;
+  background: #1f3b67;
+  color: #fff;
+}
+
+.adminBtnPrimary:hover {
+  background: #ff7a00;
+  transform: translateY(-1px);
+}
+
+.adminCard {
+  margin-top: 14px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.adminTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.adminTable thead {
+  background: #fafafa;
+}
+
+.adminTable th,
+.adminTable td {
+  text-align: left;
+  padding: 14px 12px;
+  border-top: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.adminTable thead th {
+  border-top: none;
+  font-weight: 900;
+}
+
+.adminRow:hover {
+  background: #fffaf5;
+}
+
+.adminImg {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid #eee;
+  background: #fafafa;
+}
+
+.adminName {
+  font-weight: 900;
+}
+
+.adminTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #eee;
+  background: #fafafa;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.adminStockOk {
+  color: #117a37;
+  font-weight: 900;
+}
+
+.adminStockLow {
+  color: #b35b00;
+  font-weight: 900;
+}
+
+.adminStockNo {
+  color: #b00020;
+  font-weight: 900;
+}
+
+.adminActionsCell {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.adminMiniBtn {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+  transition: background 140ms ease, border-color 140ms ease, transform 120ms ease;
+}
+
+.adminMiniBtn:hover {
+  background: rgba(255, 122, 0, 0.10);
+  border-color: rgba(255, 122, 0, 0.35);
+}
+
+.adminDanger {
+  border: 1px solid #ffbdbd;
+  background: #fff3f3;
+}
+
+.adminDanger:hover {
+  background: #ff7a00;
+  border-color: #ff7a00;
+  color: #fff;
+}
+
+.adminErrorBox {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #ffd0d0;
+  background: #fff5f5;
+}
+
+/* ===== Responsivo (tabela vira cards) ===== */
+@media (max-width: 900px) {
+  .adminCard {
+    border-radius: 14px;
+  }
+
+  .adminTable thead {
+    display: none;
+  }
+
+  .adminTable,
+  .adminTable tbody,
+  .adminTable tr,
+  .adminTable td {
+    display: block;
+    width: 100%;
+  }
+
+  .adminTable tr {
+    border-top: 1px solid #eee;
+    padding: 12px;
+  }
+
+  .adminTable td {
+    border-top: none;
+    padding: 10px 0;
+  }
+
+  .adminMobileRow {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .adminActionsCell {
+    margin-top: 10px;
+  }
+}
